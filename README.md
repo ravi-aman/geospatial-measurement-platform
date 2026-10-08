@@ -135,6 +135,8 @@ The essentials:
 ### Local development (no Docker)
 Requirements: Python ≥ 3.12, Node ≥ 22, PostgreSQL with PostGIS (Supabase works; the migration enables PostGIS).
 
+One-time setup (backend deps + DB + root runner):
+
 ```bash
 cd backend
 pip install -c constraints.txt -e ".[dev]"
@@ -145,9 +147,15 @@ cp .env.example .env
 Edit `.env` and set `DATABASE_URL` (for Supabase use the Session pooler URI and URL-encode the password), then:
 ```bash
 alembic upgrade head
+cd .. && npm install
 ```
+Then run backend (`:8000`, embedded worker) + frontend (`:5173`) together from the repo root:
 ```bash
-EMBEDDED_WORKER=true uvicorn app.main:create_app --factory --reload
+npm run dev
+```
+Manual alternative (two terminals):
+```bash
+EMBEDDED_WORKER=true uvicorn app.main:create_app --factory --reload --app-dir backend
 ```
 In another terminal:
 ```bash

@@ -17,6 +17,18 @@ Run the API, the worker and the frontend directly on a workstation against any P
 
 No system GDAL/GEOS/PROJ is required: they ship inside the `pyogrio`, `shapely` and `pyproj` wheels.
 
+## One command (repo root)
+
+After the one-time backend setup below (`.env` + `alembic upgrade head`) and `npm install` at the repo root:
+
+```bash
+npm run dev
+```
+
+Runs the backend (`http://localhost:8000`, `EMBEDDED_WORKER=true`) and the frontend
+(`http://localhost:5173`) together via `concurrently`. Scripts live in the root `package.json`:
+`dev`, `dev:backend`, `dev:frontend`. Manual per-app commands follow.
+
 ## Backend
 
 All backend commands run from `backend/`: settings are read from a `.env` file in the **current working
