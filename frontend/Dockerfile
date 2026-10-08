@@ -2,7 +2,7 @@
 # Static SPA served by nginx. In docker-compose nginx also reverse-proxies /api to the backend, so the
 # browser talks to a single origin (no CORS). In production the same dist/ can go to S3 + CloudFront.
 
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
