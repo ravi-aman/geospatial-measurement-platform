@@ -38,7 +38,7 @@ from app.domain.errors import InvalidRequestError, PayloadTooLargeError, UploadR
 from app.geoprocessing.crs import describe, parse_crs_override
 from app.ingestion.archive import ZipLimits, inspect_shapefile_zip
 from app.ingestion.filenames import file_extension, sanitize_display_filename
-from app.ingestion.sniffing import SNIFF_BYTES, detect_format
+from app.ingestion.sniffing import SNIFF_BYTES, detect_format, require_supported_extension
 from app.storage import StorageBackend
 
 _CHUNK = 1024 * 1024
@@ -131,6 +131,7 @@ class UploadService:
     def accept(self, upload: IncomingUpload) -> UploadResult:
         filename = sanitize_display_filename(upload.filename)
         extension = file_extension(filename)
+        require_supported_extension(extension)  # cheapest check first: reject before copying/hashing
         override = parse_crs_override(upload.crs)
         override_id = describe(override)[0] if override is not None else None
         idempotency_key = self._validate_idempotency_key(upload.idempotency_key)

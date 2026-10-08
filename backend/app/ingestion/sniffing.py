@@ -32,18 +32,24 @@ _KML_ROOT = re.compile(
 )
 
 
-def detect_format(extension: str, head: bytes) -> SourceFormat:
-    """Return the dataset format or raise a structured upload error.
-
-    :param extension: lower-cased extension of the client filename (``'.kml'``)
-    :param head: the first bytes of the uploaded content (up to :data:`SNIFF_BYTES`)
-    """
+def require_supported_extension(extension: str) -> SourceFormat:
+    """Format implied by the extension allow-list; checked first, before any bytes are copied or hashed."""
     fmt = ALLOWED_EXTENSIONS.get(extension)
     if fmt is None:
         raise UnsupportedMediaTypeError(
             "Only .kml files and .zip archives containing a Shapefile are accepted.",
             details={"extension": extension or None, "allowed": sorted(ALLOWED_EXTENSIONS)},
         )
+    return fmt
+
+
+def detect_format(extension: str, head: bytes) -> SourceFormat:
+    """Return the dataset format or raise a structured upload error.
+
+    :param extension: lower-cased extension of the client filename (``'.kml'``)
+    :param head: the first bytes of the uploaded content (up to :data:`SNIFF_BYTES`)
+    """
+    fmt = require_supported_extension(extension)
     if not head:
         raise UploadRejectedError("The uploaded file is empty.", code="EMPTY_FILE")
 

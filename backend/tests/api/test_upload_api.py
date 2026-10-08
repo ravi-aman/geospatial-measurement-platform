@@ -163,3 +163,9 @@ class TestSizeLimits:
     def test_body_far_over_the_limit_is_cut_off_early(self, small_limit_client: TestClient) -> None:
         response = post(small_limit_client, b"<kml>" + b" " * 200_000)
         assert response.status_code == 413 and error_code(response) == "FILE_TOO_LARGE"
+
+
+def test_unsupported_extension_wins_over_other_errors(client: TestClient) -> None:
+    """The extension allow-list is the first content check (before CRS parsing, hashing or sniffing)."""
+    response = post(client, b"irrelevant", "survey.geojson", data={"crs": "WGS84"})
+    assert response.status_code == 415 and error_code(response) == "UNSUPPORTED_FILE_TYPE"
