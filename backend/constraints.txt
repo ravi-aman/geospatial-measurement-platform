@@ -38,7 +38,7 @@ packaging==26.3
 pandas==3.0.6
 pathspec==1.1.1
 pluggy==1.6.0
-psycopg==3.3.4
+psycopg==3.3.6
 pyarrow==25.0.0
 pycparser==3.0
 pydantic==2.13.5
