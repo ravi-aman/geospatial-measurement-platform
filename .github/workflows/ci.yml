@@ -67,7 +67,7 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
@@ -110,7 +110,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install pip-audit && pip-audit -r <(grep -v '^#' backend/constraints.txt | grep -v '^$')
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: cd frontend && npm audit --omit=dev --audit-level=high
