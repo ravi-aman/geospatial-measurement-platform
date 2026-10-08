@@ -144,7 +144,7 @@ class UploadService:
                 inspect_shapefile_zip(spooled.path, self._zip_limits)
 
             if idempotency_key is not None:
-                replay = self._replay(idempotency_key, spooled.sha256)
+                replay = self._replay(idempotency_key, spooled.sha256, override_id)
                 if replay is not None:
                     return replay
 
@@ -161,7 +161,7 @@ class UploadService:
                 # Two concurrent requests with the same Idempotency-Key: the loser replays the winner.
                 if idempotency_key is None:
                     raise
-                replay = self._replay(idempotency_key, spooled.sha256)
+                replay = self._replay(idempotency_key, spooled.sha256, override_id)
                 if replay is None:
                     raise
                 return replay
@@ -182,14 +182,14 @@ class UploadService:
             )
         return key
 
-    def _replay(self, key: str, sha256: str) -> UploadResult | None:
+    def _replay(self, key: str, sha256: str, crs_override: str | None) -> UploadResult | None:
         with self._sessions() as session:
             existing = FileRepository(session).get_by_idempotency_key(key)
             if existing is None:
                 return None
-            if existing.content_sha256 != sha256:
+            if existing.content_sha256 != sha256 or existing.job.crs_override != crs_override:
                 raise UploadRejectedError(
-                    "This Idempotency-Key was already used with a different file.",
+                    "This Idempotency-Key was already used with a different file or CRS override.",
                     code="IDEMPOTENCY_KEY_REUSED",
                 )
             return UploadResult(existing.id, existing.job_id, replayed=True, job_reused=True)

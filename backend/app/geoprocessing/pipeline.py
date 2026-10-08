@@ -25,6 +25,7 @@ from app.geoprocessing.summary import SummaryAccumulator
 
 RecordSink = Callable[[list[FeatureRecord]], None]
 ProgressCallback = Callable[[int], None]
+StartCallback = Callable[[int | None], None]
 
 
 @dataclass(slots=True)
@@ -60,6 +61,7 @@ def process_dataset(
     max_features: int,
     sink: RecordSink,
     on_progress: ProgressCallback | None = None,
+    on_start: StartCallback | None = None,
 ) -> DatasetResult:
     layers = describe_dataset(path)
     declared_total = sum(layer.feature_count for layer in layers if layer.feature_count > 0)
@@ -67,6 +69,8 @@ def process_dataset(
         raise DatasetError(
             "TOO_MANY_FEATURES", f"The dataset has {declared_total} features; the limit is {max_features}."
         )
+    if on_start is not None:  # total is unknown (None) if any layer cannot report its count cheaply
+        on_start(declared_total if all(layer.feature_count >= 0 for layer in layers) else None)
 
     accumulator = SummaryAccumulator()
     warnings: list[Issue] = []

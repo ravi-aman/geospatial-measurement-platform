@@ -246,3 +246,31 @@ def test_summary_totals_are_null_when_nothing_was_measured() -> None:
     measured = SummaryAccumulator()
     measured.add(run([box(77, 28, 77.01, 28.01)]))
     assert measured.snapshot()["total_area_m2"] > 0 and measured.snapshot()["total_length_m"] is None
+
+
+def test_unknown_geometry_family_is_reported_unsupported(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A geometry the classifier does not know must be UNSUPPORTED with a reason, never a silent NOT_APPLICABLE."""
+    from app.geoprocessing import processor as processor_module
+    from app.geoprocessing.geometry import Normalized
+
+    monkeypatch.setattr(processor_module, "normalize", lambda g: Normalized(g, None, False))
+    (record,) = run([box(77, 28, 77.01, 28.01)])
+    assert record.status is MeasurementStatus.UNSUPPORTED
+    assert record.error_code == FeatureCode.UNSUPPORTED_GEOMETRY_TYPE
+
+
+def test_pipeline_reports_declared_total_at_start(tmp_path: Path) -> None:
+    path = tmp_path / "three.kml"
+    path.write_bytes(kml_document(*[kml_placemark(f"p{i}", kml_point(77, 28)) for i in range(3)]))
+    started: list[int | None] = []
+    process_dataset(
+        path,
+        SourceFormat.KML,
+        crs_override=None,
+        processor=FeatureProcessor(LocalEqualAreaStrategy()),
+        batch_size=2,
+        max_features=10,
+        sink=lambda records: None,
+        on_start=started.append,
+    )
+    assert started == [3]

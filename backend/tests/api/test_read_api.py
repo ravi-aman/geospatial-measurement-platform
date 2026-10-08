@@ -219,6 +219,13 @@ class TestTilesAndJobs:
         assert response.headers["content-type"] == "application/vnd.mapbox-vector-tile"
         assert "max-age" in response.headers["cache-control"] and response.headers["etag"]
 
+    def test_tile_revalidation_returns_304(self, client: TestClient, processed: str) -> None:
+        url = f"/api/files/{processed}/tiles/8/182/107.mvt"
+        etag = client.get(url).headers["etag"]
+        response = client.get(url, headers={"If-None-Match": etag})
+        assert response.status_code == 304 and response.content == b""
+        assert client.get(url, headers={"If-None-Match": '"something-else"'}).status_code == 200
+
     def test_empty_tile(self, client: TestClient, processed: str) -> None:
         assert client.get(f"/api/files/{processed}/tiles/8/0/0.mvt").status_code == 204
 

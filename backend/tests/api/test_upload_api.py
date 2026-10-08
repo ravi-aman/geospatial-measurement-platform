@@ -169,3 +169,12 @@ def test_unsupported_extension_wins_over_other_errors(client: TestClient) -> Non
     """The extension allow-list is the first content check (before CRS parsing, hashing or sniffing)."""
     response = post(client, b"irrelevant", "survey.geojson", data={"crs": "WGS84"})
     assert response.status_code == 415 and error_code(response) == "UNSUPPORTED_FILE_TYPE"
+
+
+def test_idempotency_key_reused_with_different_crs_is_rejected(client: TestClient, workdir: Path) -> None:
+    archive = shapefile_zip([box(500000, 3100000, 500100, 3100100)], crs=None, workdir=workdir)
+    post(client, archive, "a.zip", headers={"Idempotency-Key": "crs-variant-0001"})
+    response = post(
+        client, archive, "a.zip", data={"crs": "EPSG:32643"}, headers={"Idempotency-Key": "crs-variant-0001"}
+    )
+    assert response.status_code == 422 and error_code(response) == "IDEMPOTENCY_KEY_REUSED"

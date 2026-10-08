@@ -53,3 +53,11 @@ def test_every_response_carries_request_id_and_security_headers(client: TestClie
     response = client.get("/health", headers={"X-Request-ID": "trace-123"})
     assert response.headers["x-request-id"] == "trace-123"
     assert response.headers["x-content-type-options"] == "nosniff"
+
+
+def test_security_headers_also_on_cors_preflight(client: TestClient) -> None:
+    preflight = client.options(
+        "/api/files/", headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST"}
+    )
+    assert preflight.headers["x-content-type-options"] == "nosniff"
+    assert "x-request-id" in preflight.headers

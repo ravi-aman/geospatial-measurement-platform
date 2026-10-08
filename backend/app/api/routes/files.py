@@ -307,13 +307,24 @@ def get_feature(file_id: uuid.UUID, feature_id: Annotated[int, Path(ge=0)], sess
     summary="Mapbox Vector Tile of the file's features (for MapLibre)",
     response_class=Response,
 )
-def get_tile(file_id: uuid.UUID, z: int, x: int, y: int, container: ContainerDep, session: SessionDep) -> Response:
+def get_tile(
+    file_id: uuid.UUID,
+    z: int,
+    x: int,
+    y: int,
+    container: ContainerDep,
+    session: SessionDep,
+    if_none_match: Annotated[str | None, Header(alias="If-None-Match")] = None,
+) -> Response:
     if not 0 <= z <= _MAX_TILE_ZOOM or not (0 <= x < 2**z and 0 <= y < 2**z):
         raise InvalidRequestError("Tile coordinates out of range.", code="INVALID_TILE")
     job = _require_results(_load_file(session, file_id))
-    data = FeatureRepository(session).tile(job.id, z, x, y, max_features=container.settings.tile_max_features)
     # Results of a completed job never change, so tiles are safely cacheable by browsers and CDNs.
-    headers = {"Cache-Control": "public, max-age=86400", "ETag": f'"{job.id.hex}-{z}-{x}-{y}"'}
+    etag = f'"{job.id.hex}-{z}-{x}-{y}"'
+    headers = {"Cache-Control": "public, max-age=86400", "ETag": etag}
+    if if_none_match is not None and etag in (t.strip() for t in if_none_match.split(",")):
+        return Response(status_code=304, headers=headers)  # revalidation without re-rendering the tile
+    data = FeatureRepository(session).tile(job.id, z, x, y, max_features=container.settings.tile_max_features)
     if not data:
         return Response(status_code=204, headers=headers)
     return Response(content=data, media_type="application/vnd.mapbox-vector-tile", headers=headers)

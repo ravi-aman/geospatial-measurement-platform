@@ -184,7 +184,8 @@ class FeatureProcessor:
                     FeatureCode.COLLECTION_NORMALIZED,
                     f"Homogeneous GeometryCollection measured as {norm.geometry.geom_type}.",
                 )
-            if norm.family is None or not self._is_measurable_family(record, norm.family):
+            # The family check runs first (it records UNSUPPORTED/NOT_APPLICABLE); `is None` only narrows the type.
+            if not self._is_measurable_family(record, norm.family) or norm.family is None:
                 continue
             result = validate_and_repair(norm.geometry, norm.family)
             record.is_valid = result.is_valid

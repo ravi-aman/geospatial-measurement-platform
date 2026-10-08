@@ -65,16 +65,18 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     app.include_router(jobs.router)
     app.include_router(system.router)
 
-    # Middleware order: the last added runs first (outermost).
+    # Middleware order: the last added runs first (outermost). Security headers wrap everything (including CORS
+    # preflights and the 500s rendered by RequestContextMiddleware); the request context wraps CORS and the
+    # body-size limit, so even a 413 or a preflight carries X-Request-ID.
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_upload_bytes + MULTIPART_OVERHEAD_BYTES)
-    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_allow_origins,
         allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["Content-Type", "Idempotency-Key", "Prefer", "X-Request-ID"],
-        expose_headers=["Location", "X-Request-ID", "Retry-After", "Idempotent-Replayed", "Preference-Applied"],
+        allow_headers=["Content-Type", "Idempotency-Key", "Prefer", "X-Request-ID", "If-None-Match"],
+        expose_headers=["Location", "X-Request-ID", "Retry-After", "Idempotent-Replayed", "Preference-Applied", "ETag"],
         max_age=600,
     )
     app.add_middleware(RequestContextMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
     return app

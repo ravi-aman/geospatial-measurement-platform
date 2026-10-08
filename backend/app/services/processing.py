@@ -141,6 +141,12 @@ class JobExecutor:
                 override = parse_crs_override(job.crs_override)
             except UploadRejectedError as exc:
                 raise DatasetError(exc.code, exc.message) from exc
+
+            def on_start(total: int | None) -> None:
+                with self._sessions.begin() as session:
+                    if not JobRepository(session).heartbeat(job, settings.worker_lease_s, 0, total=total):
+                        raise LeaseLostError
+
             result = process_dataset(
                 dataset_path,
                 job.source_format,
@@ -149,6 +155,7 @@ class JobExecutor:
                 batch_size=settings.processing_batch_size,
                 max_features=settings.max_features_per_file,
                 sink=sink,
+                on_start=on_start,
             )
 
         outcome = self._outcome(result, input_warnings, started)
