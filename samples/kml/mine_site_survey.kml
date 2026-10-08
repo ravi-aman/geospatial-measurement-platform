@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document><name>Synthetic mine site survey</name>
+<Folder><name>Lease and pits</name>
+<Placemark><name>Mining lease boundary</name><ExtendedData><Data name="lease_id"><value>ML-0001</value></Data><Data name="declared_area_ha"><value>1255.6</value></Data></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>81.62,21.31 81.66,21.31 81.66,21.34 81.62,21.34 81.62,21.31</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+<Placemark><name>Pit A</name><ExtendedData><Data name="bench_count"><value>6</value></Data><Data name="status"><value>active</value></Data></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>81.626,21.316 81.636,21.315 81.639,21.323 81.632,21.328 81.625,21.324 81.626,21.316</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+<Placemark><name>Pit B (with sump)</name><ExtendedData><Data name="status"><value>active</value></Data></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>81.644,21.318 81.653,21.318 81.653,21.325 81.644,21.325 81.644,21.318</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>81.647,21.32 81.649,21.32 81.649,21.322 81.647,21.322 81.647,21.32</coordinates></LinearRing></innerBoundaryIs></Polygon></Placemark>
+<Placemark><name>Waste dump (self-intersecting as digitised)</name><ExtendedData><Data name="status"><value>active</value></Data></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>81.65,21.33 81.657,21.337 81.657,21.33 81.65,21.337 81.65,21.33</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+</Folder>
+<Folder><name>Stockpiles</name>
+<Placemark><name>Coal stockpiles 1-3</name><ExtendedData><Data name="material"><value>coal</value></Data></ExtendedData><MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>81.622,21.332 81.6238,21.332 81.6238,21.3335 81.622,21.3335 81.622,21.332</coordinates></LinearRing></outerBoundaryIs></Polygon><Polygon><outerBoundaryIs><LinearRing><coordinates>81.625,21.332 81.6268,21.332 81.6268,21.3335 81.625,21.3335 81.625,21.332</coordinates></LinearRing></outerBoundaryIs></Polygon><Polygon><outerBoundaryIs><LinearRing><coordinates>81.628,21.332 81.6298,21.332 81.6298,21.3335 81.628,21.3335 81.628,21.332</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry></Placemark>
+</Folder>
+<Folder><name>Haul roads</name>
+<Placemark><name>Haul road north</name><ExtendedData><Data name="surface"><value>gravel</value></Data><Data name="width_m"><value>18</value></Data></ExtendedData><LineString><coordinates>81.632,21.328 81.635,21.332 81.642,21.334 81.651,21.333</coordinates></LineString></Placemark>
+<Placemark><name>Haul road east</name><ExtendedData><Data name="surface"><value>gravel</value></Data><Data name="width_m"><value>15</value></Data></ExtendedData><LineString><coordinates>81.639,21.321 81.644,21.321 81.659,21.314</coordinates></LineString></Placemark>
+<Placemark><name>Conveyor (two segments)</name><MultiGeometry><LineString><coordinates>81.628,21.333 81.628,21.338</coordinates></LineString><LineString><coordinates>81.628,21.338 81.638,21.339</coordinates></LineString></MultiGeometry></Placemark>
+</Folder>
+<Folder><name>Survey control</name>
+<Placemark><name>Control point 1</name><ExtendedData><Data name="elevation_m"><value>288.4</value></Data></ExtendedData><Point><coordinates>81.621,21.311,288.4</coordinates></Point></Placemark>
+<Placemark><name>Control point 2</name><ExtendedData><Data name="elevation_m"><value>291.2</value></Data></ExtendedData><Point><coordinates>81.659,21.311,291.2</coordinates></Point></Placemark>
+<Placemark><name>Control point 3</name><ExtendedData><Data name="elevation_m"><value>287.9</value></Data></ExtendedData><Point><coordinates>81.64,21.339,287.9</coordinates></Point></Placemark>
+<Placemark><name>Weighbridge (point and line)</name><MultiGeometry><Point><coordinates>81.658,21.313</coordinates></Point><LineString><coordinates>81.657,21.313 81.659,21.313</coordinates></LineString></MultiGeometry></Placemark>
+<Placemark><name>Planned office (location not yet surveyed)</name></Placemark>
+</Folder>
+</Document>
+</kml>
