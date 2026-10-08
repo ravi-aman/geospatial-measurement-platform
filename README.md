@@ -5,7 +5,7 @@ attributes, and measured — **area (m²)** for polygons, **length (m)** for lin
 coordinate system and cross-checking against an ellipsoidal geodesic reference. Points are listed without a
 measurement. A FastAPI + PostGIS backend with a PostgreSQL job queue, and a React + MapLibre frontend.
 
-[![CI](https://github.com/ravikanttiwari0/geospatial-measurement-platform/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
+[![CI](https://github.com/ravi-aman/geospatial-measurement-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ravi-aman/geospatial-measurement-platform/actions/workflows/ci.yml)
 
 | | |
 |---|---|
@@ -14,6 +14,10 @@ measurement. A FastAPI + PostGIS backend with a PostgreSQL job queue, and a Reac
 | **Frontend** | React 19 · TypeScript · Vite · Tailwind + shadcn/ui · TanStack Query/Virtual · MapLibre GL JS |
 | **Tests** | 293 backend (unit, integration and API against real PostGIS, performance) · 18 frontend · `mypy --strict` |
 | **Docs** | [`docs/`](docs/) — architecture, geospatial, API, deployment, 10 ADRs, [interview guide](docs/interview.md) |
+
+| Results map (PostGIS vector tiles) | Title block (dark theme) | Feature table |
+|---|---|---|
+| ![Map of a synthetic mine-site survey: lease, pits, a repaired self-intersecting dump, stockpiles, haul roads, control points](docs/assets/map-light.jpg) | ![Survey title block with CRS, feature counts and summed area and length](docs/assets/title-block-dark.jpg) | ![Virtualised feature table with status, geometry type and area](docs/assets/feature-table.jpg) |
 
 ---
 
@@ -367,8 +371,8 @@ job started/finished/failed events with counts and duration; `X-Request-ID` on e
 | Backend performance | 2 | 100k features, both strategies |
 | Frontend | 18 | formatters, API client, validation, status component |
 
-Tests found real bugs: missing request ids on 500s, a pagination bug that only appears with Supabase's float
-formatting, `0` instead of `null` totals. [docs/testing/strategy.md](docs/testing/strategy.md).
+Backend coverage: **95 %** (statements + branches, `pytest --cov`). Tests found real bugs: missing request ids on
+500s, a pagination bug that only appears with Supabase's float formatting, `0` instead of `null` totals. [docs/testing/strategy.md](docs/testing/strategy.md).
 
 ## Project structure
 
