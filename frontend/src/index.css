@@ -1,0 +1,161 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/archivo/wdth.css";
+
+/*
+ * Swiss system: white / neutral surfaces, near-black type, 1px rules instead of shadows, square corners,
+ * one accent (International Orange). Archivo is the only typeface; its width axis provides the condensed
+ * numerals used for measurements. Dark mode inverts the neutrals and keeps the same accent and rules.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Archivo Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-heading: var(--font-sans);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-signal: var(--signal);
+  --color-signal-foreground: var(--signal-foreground);
+  --color-rule: var(--rule);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
+:root {
+  --radius: 0px;
+  --background: #ffffff;
+  --foreground: #111113;
+  --card: #ffffff;
+  --card-foreground: #111113;
+  --popover: #ffffff;
+  --popover-foreground: #111113;
+  --primary: #111113;
+  --primary-foreground: #ffffff;
+  --secondary: #f7f7f8;
+  --secondary-foreground: #111113;
+  --muted: #f7f7f8;
+  --muted-foreground: #5c5c63;
+  --accent: #f7f7f8;
+  --accent-foreground: #111113;
+  --destructive: #ff4f00;
+  --border: #dcdce0; /* minor hairlines */
+  --rule: #111113; /* major rules */
+  --input: #c9c9ce;
+  --ring: #ff4f00;
+  --signal: #ff4f00; /* International Orange - the single accent */
+  --signal-foreground: #ffffff;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #0e0e10;
+  --foreground: #f7f7f8;
+  --card: #0e0e10;
+  --card-foreground: #f7f7f8;
+  --popover: #17171a;
+  --popover-foreground: #f7f7f8;
+  --primary: #f7f7f8;
+  --primary-foreground: #0e0e10;
+  --secondary: #17171a;
+  --secondary-foreground: #f7f7f8;
+  --muted: #17171a;
+  --muted-foreground: #a1a1a8;
+  --accent: #17171a;
+  --accent-foreground: #f7f7f8;
+  --destructive: #ff6a26;
+  --border: #2c2c31;
+  --rule: #f7f7f8;
+  --input: #3a3a40;
+  --ring: #ff6a26;
+  --signal: #ff6a26;
+  --signal-foreground: #0e0e10;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "tnum" 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Condensed numerals used as composition elements (measurements, folio markers). */
+  .numeral {
+    font-stretch: 72%;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.01em;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .rule-top {
+    border-top: 1px solid var(--rule);
+  }
+  .rule-bottom {
+    border-bottom: 1px solid var(--rule);
+  }
+}
+
+/* MapLibre controls follow the system: square, hairline, no shadow. */
+.maplibregl-ctrl-group {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid var(--rule);
+  background: var(--background) !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--border) !important;
+}
+.dark .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
+.maplibregl-popup-content {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid var(--rule);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+}
+.maplibregl-popup-tip {
+  display: none;
+}
