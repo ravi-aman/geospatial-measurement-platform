@@ -6,8 +6,8 @@ annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1
 ast-serialize==0.12.1
-boto3==1.43.107
-botocore==1.43.107
+boto3==1.43.108
+botocore==1.43.108
 certifi==2026.7.22
 cffi==2.1.1
 charset-normalizer==3.5.2
@@ -38,11 +38,11 @@ packaging==26.3
 pandas==3.0.6
 pathspec==1.1.1
 pluggy==1.6.0
-psycopg==3.3.4
-pyarrow==25.0.0
+psycopg==3.3.6
+pyarrow==25.0.1
 pycparser==3.0
 pydantic==2.13.5
-pydantic-core==2.46.5
+pydantic-core==2.49.0
 pydantic-settings==2.15.0
 pygments==2.21.0
 pyogrio==0.13.0
@@ -71,4 +71,4 @@ watchfiles==1.3.0
 websockets==17.2
 werkzeug==3.1.9
 xmltodict==1.0.4
-psycopg-binary==3.3.4
+psycopg-binary==3.3.6
