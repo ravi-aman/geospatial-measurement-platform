@@ -1,0 +1,78 @@
+# Full local stack: PostGIS + migrations + API + 2 workers + web (nginx serving the SPA and proxying /api).
+#
+#   docker compose up --build          -> http://localhost:8080  (API docs: http://localhost:8080/docs)
+#
+# To use Supabase (or any managed PostgreSQL/PostGIS) instead of the local "db" container, set DATABASE_URL
+# in a root .env file (git-ignored) - see docs/deployment/docker.md.
+
+x-backend: &backend
+  build:
+    context: ./backend
+  image: geomeasure-backend:local
+  environment: &backend-env
+    DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://geomeasure:geomeasure@db:5432/geomeasure}
+    DB_SCHEMA: ${DB_SCHEMA:-geomeasure}
+    STORAGE_BACKEND: local
+    STORAGE_LOCAL_ROOT: /data/storage
+    LOG_FORMAT: json
+    LOG_LEVEL: INFO
+  volumes:
+    - uploads:/data/storage   # shared by API and workers (production: S3, no shared volume)
+
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_USER: geomeasure
+      POSTGRES_PASSWORD: geomeasure
+      POSTGRES_DB: geomeasure
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geomeasure -d geomeasure"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *backend
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *backend
+    environment:
+      <<: *backend-env
+      EMBEDDED_WORKER: "false"
+      CORS_ALLOW_ORIGINS: '["http://localhost:8080"]'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    expose:
+      - "8000"
+
+  worker:
+    <<: *backend
+    command: ["python", "-m", "app.worker"]
+    stop_grace_period: 30s   # SIGTERM -> finish the current batch, release the job
+    deploy:
+      replicas: 2
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: ./frontend
+    image: geomeasure-web:local
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  uploads:

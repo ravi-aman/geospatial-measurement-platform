@@ -2,7 +2,7 @@
 name = "geomeasure"
 version = "1.0.0"
 description = "CRS-aware geospatial file measurement API: upload KML / zipped Shapefiles, extract features, measure area and length."
-readme = "../README.md"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 authors = [{ name = "ravi-aman" }]

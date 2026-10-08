@@ -69,30 +69,64 @@ def ring(lon: float, lat: float, dx: float, dy: float, z: float | None = None) -
 def mine_site_kml() -> str:
     lon, lat = SITE_LON, SITE_LAT
     lease = ring(lon, lat, 0.04, 0.03)
-    pit_a = [(lon + 0.006, lat + 0.006), (lon + 0.016, lat + 0.005), (lon + 0.019, lat + 0.013),
-             (lon + 0.012, lat + 0.018), (lon + 0.005, lat + 0.014), (lon + 0.006, lat + 0.006)]
+    pit_a = [
+        (lon + 0.006, lat + 0.006),
+        (lon + 0.016, lat + 0.005),
+        (lon + 0.019, lat + 0.013),
+        (lon + 0.012, lat + 0.018),
+        (lon + 0.005, lat + 0.014),
+        (lon + 0.006, lat + 0.006),
+    ]
     pit_b = ring(lon + 0.024, lat + 0.008, 0.009, 0.007)
     pit_b_sump = ring(lon + 0.027, lat + 0.010, 0.002, 0.002)  # hole: water sump inside pit B
     # Digitised with crossing edges (a "bow-tie"): invalid as drawn, repaired before measuring.
-    waste_dump = [(lon + 0.030, lat + 0.020), (lon + 0.037, lat + 0.027), (lon + 0.037, lat + 0.020),
-                  (lon + 0.030, lat + 0.027), (lon + 0.030, lat + 0.020)]
-    stockpiles = "<MultiGeometry>" + "".join(
-        polygon_xml(ring(lon + 0.002 + i * 0.003, lat + 0.022, 0.0018, 0.0015)) for i in range(3)
-    ) + "</MultiGeometry>"
-    haul_north = "<LineString><coordinates>" + coords([
-        (lon + 0.012, lat + 0.018), (lon + 0.015, lat + 0.022), (lon + 0.022, lat + 0.024), (lon + 0.031, lat + 0.023)
-    ]) + "</coordinates></LineString>"
-    haul_east = "<LineString><coordinates>" + coords([
-        (lon + 0.019, lat + 0.011), (lon + 0.024, lat + 0.011), (lon + 0.039, lat + 0.004)
-    ]) + "</coordinates></LineString>"
-    conveyor = "<MultiGeometry>" + "".join(
-        "<LineString><coordinates>" + coords(seg) + "</coordinates></LineString>"
-        for seg in ([(lon + 0.008, lat + 0.023), (lon + 0.008, lat + 0.028)],
-                    [(lon + 0.008, lat + 0.028), (lon + 0.018, lat + 0.029)])
-    ) + "</MultiGeometry>"
-    weighbridge = "<MultiGeometry><Point><coordinates>" + coords([(lon + 0.038, lat + 0.003)]) + \
-        "</coordinates></Point><LineString><coordinates>" + \
-        coords([(lon + 0.037, lat + 0.003), (lon + 0.039, lat + 0.003)]) + "</coordinates></LineString></MultiGeometry>"
+    waste_dump = [
+        (lon + 0.030, lat + 0.020),
+        (lon + 0.037, lat + 0.027),
+        (lon + 0.037, lat + 0.020),
+        (lon + 0.030, lat + 0.027),
+        (lon + 0.030, lat + 0.020),
+    ]
+    stockpiles = (
+        "<MultiGeometry>"
+        + "".join(polygon_xml(ring(lon + 0.002 + i * 0.003, lat + 0.022, 0.0018, 0.0015)) for i in range(3))
+        + "</MultiGeometry>"
+    )
+    haul_north = (
+        "<LineString><coordinates>"
+        + coords(
+            [
+                (lon + 0.012, lat + 0.018),
+                (lon + 0.015, lat + 0.022),
+                (lon + 0.022, lat + 0.024),
+                (lon + 0.031, lat + 0.023),
+            ]
+        )
+        + "</coordinates></LineString>"
+    )
+    haul_east = (
+        "<LineString><coordinates>"
+        + coords([(lon + 0.019, lat + 0.011), (lon + 0.024, lat + 0.011), (lon + 0.039, lat + 0.004)])
+        + "</coordinates></LineString>"
+    )
+    conveyor = (
+        "<MultiGeometry>"
+        + "".join(
+            "<LineString><coordinates>" + coords(seg) + "</coordinates></LineString>"
+            for seg in (
+                [(lon + 0.008, lat + 0.023), (lon + 0.008, lat + 0.028)],
+                [(lon + 0.008, lat + 0.028), (lon + 0.018, lat + 0.029)],
+            )
+        )
+        + "</MultiGeometry>"
+    )
+    weighbridge = (
+        "<MultiGeometry><Point><coordinates>"
+        + coords([(lon + 0.038, lat + 0.003)])
+        + "</coordinates></Point><LineString><coordinates>"
+        + coords([(lon + 0.037, lat + 0.003), (lon + 0.039, lat + 0.003)])
+        + "</coordinates></LineString></MultiGeometry>"
+    )
 
     return kml(
         "Synthetic mine site survey",
@@ -116,8 +150,11 @@ def mine_site_kml() -> str:
         folder(
             "Survey control",
             *(
-                placemark(f"Control point {i + 1}", f"<Point><coordinates>{coords([(lon + dx, lat + dy, z)])}</coordinates></Point>",
-                          {"elevation_m": z})
+                placemark(
+                    f"Control point {i + 1}",
+                    f"<Point><coordinates>{coords([(lon + dx, lat + dy, z)])}</coordinates></Point>",
+                    {"elevation_m": z},
+                )
                 for i, (dx, dy, z) in enumerate([(0.001, 0.001, 288.4), (0.039, 0.001, 291.2), (0.020, 0.029, 287.9)])
             ),
             placemark("Weighbridge (point and line)", weighbridge),
@@ -132,14 +169,18 @@ def delhi_parcels_kml() -> str:
     for row in range(3):
         for col in range(4):
             shell = ring(lon + col * 0.0012, lat + row * 0.0010, 0.001, 0.0008)
-            parts.append(placemark(f"Parcel {row * 4 + col + 1:02d}", polygon_xml(shell),
-                                   {"block": "B", "plot_no": row * 4 + col + 1}))
+            parts.append(
+                placemark(
+                    f"Parcel {row * 4 + col + 1:02d}", polygon_xml(shell), {"block": "B", "plot_no": row * 4 + col + 1}
+                )
+            )
     return kml("Synthetic parcel block", *parts)
 
 
 # ---------------------------------------------------------------------------- Shapefile helpers
-def write_zip(gdf: gpd.GeoDataFrame, target: Path, stem: str, *, drop: set[str] | None = None,
-              folder: str = "") -> None:
+def write_zip(
+    gdf: gpd.GeoDataFrame, target: Path, stem: str, *, drop: set[str] | None = None, folder: str = ""
+) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         shp = Path(tmp) / f"{stem}.shp"
         gdf.to_file(shp, driver="ESRI Shapefile", engine="pyogrio")
@@ -187,15 +228,22 @@ def main() -> None:
 
     wells = gpd.GeoDataFrame(
         {"well_id": ["BW-1", "BW-2", "BW-3", "BW-4"], "depth_m": [62.0, 58.5, 71.2, 66.0]},
-        geometry=[Point(lon + dx, lat + dy) for dx, dy in [(0.002, 0.004), (0.035, 0.006), (0.01, 0.027), (0.03, 0.028)]],
+        geometry=[
+            Point(lon + dx, lat + dy) for dx, dy in [(0.002, 0.004), (0.035, 0.006), (0.01, 0.027), (0.03, 0.028)]
+        ],
         crs=4326,
     )
     write_zip(wells, SAMPLES / "shapefile" / "borewells_points.zip", "borewells")
 
-    bowtie = Polygon([(lon + 0.05, lat), (lon + 0.06, lat + 0.01), (lon + 0.06, lat), (lon + 0.05, lat + 0.01),
-                      (lon + 0.05, lat)])
-    multi = MultiPolygon([box(lon + 0.07, lat, lon + 0.075, lat + 0.004),
-                          translate(box(lon + 0.07, lat, lon + 0.075, lat + 0.004), 0.008)])
+    bowtie = Polygon(
+        [(lon + 0.05, lat), (lon + 0.06, lat + 0.01), (lon + 0.06, lat), (lon + 0.05, lat + 0.01), (lon + 0.05, lat)]
+    )
+    multi = MultiPolygon(
+        [
+            box(lon + 0.07, lat, lon + 0.075, lat + 0.004),
+            translate(box(lon + 0.07, lat, lon + 0.075, lat + 0.004), 0.008),
+        ]
+    )
     parcels = gpd.GeoDataFrame(
         {"parcel": ["Multipart parcel", "Self-intersecting parcel", "Empty record"], "survey_no": [101, 102, 103]},
         geometry=[multi, bowtie, None],
@@ -205,7 +253,7 @@ def main() -> None:
 
     for path in sorted(SAMPLES.rglob("*.*")):
         if path.suffix in (".kml", ".zip"):
-            print(f"{path.relative_to(SAMPLES)}  ({path.stat().st_size} bytes)")  # noqa: T201
+            print(f"{path.relative_to(SAMPLES)}  ({path.stat().st_size} bytes)")
 
 
 if __name__ == "__main__":
