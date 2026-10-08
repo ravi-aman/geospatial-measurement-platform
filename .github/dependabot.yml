@@ -1,13 +1,21 @@
 version: 2
 updates:
+  # Python packages are pinned together in constraints.txt (e.g. pydantic + pydantic-core, psycopg +
+  # psycopg-binary must move in lockstep), so updates are grouped into one PR that CI can actually install.
   - package-ecosystem: pip
     directory: /backend
     schedule: { interval: weekly }
-    open-pull-requests-limit: 5
+    groups:
+      python-dependencies:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
   - package-ecosystem: npm
     directory: /frontend
     schedule: { interval: weekly }
-    open-pull-requests-limit: 5
+    groups:
+      frontend-dependencies:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
   - package-ecosystem: docker
     directory: /backend
     schedule: { interval: monthly }
