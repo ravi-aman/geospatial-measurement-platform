@@ -12,7 +12,7 @@ measurement. A FastAPI + PostGIS backend with a PostgreSQL job queue, and a Reac
 | **Assignment** | AEREO — Software Development Engineer Intern: *Geospatial File Measurement API* |
 | **Backend** | Python 3.13 · FastAPI · SQLAlchemy 2 · PostgreSQL/PostGIS (Supabase) · GDAL (pyogrio) · Shapely 2 · PyProj |
 | **Frontend** | React 19 · TypeScript · Vite · Tailwind + shadcn/ui · TanStack Query/Virtual · MapLibre GL JS |
-| **Tests** | 293 backend (unit, integration and API against real PostGIS, performance) · 18 frontend · `mypy --strict` |
+| **Tests** | 299 backend (unit, integration and API against real PostGIS, performance) · 18 frontend · 95 % coverage · `mypy --strict` |
 | **Docs** | [`docs/`](docs/) — architecture, geospatial, API, deployment, 10 ADRs, [interview guide](docs/interview.md) |
 
 | Results map (PostGIS vector tiles) | Title block (dark theme) | Feature table |
@@ -365,9 +365,9 @@ job started/finished/failed events with counts and duration; `X-Request-ID` on e
 
 | Layer | Count | Highlights |
 |---|---:|---|
-| Backend unit | 198 | CRS precedence & axis order; UTM zone vs GeoPandas (Hypothesis); accuracy vs geodesics on 4 continents; Web Mercator trap; repair; zip-slip/bomb/symlink; XXE; failure isolation; middleware; storage (moto S3) |
+| Backend unit | 200 | CRS precedence & axis order; UTM zone vs GeoPandas (Hypothesis); accuracy vs geodesics on 4 continents; Web Mercator trap; repair; zip-slip/bomb/symlink; XXE; failure isolation; middleware; storage (moto S3) |
 | Backend integration (PostGIS) | 33 | SKIP LOCKED, lease takeover, fencing, retries, release, crash re-runs, dedup, idempotency, migration drift + round trip |
-| Backend API (PostGIS) | 60 | full upload/processing/read contract, every rejection path, pagination, filters, tiles |
+| Backend API (PostGIS) | 64 | full upload/processing/read contract, every rejection path, pagination, filters, tiles |
 | Backend performance | 2 | 100k features, both strategies |
 | Frontend | 18 | formatters, API client, validation, status component |
 
@@ -414,7 +414,8 @@ layer (010).
 * Measurements are planimetric (2D); Z is ignored. Antimeridian-crossing geometries are flagged, not split.
 * Totals are sums of features (overlapping features count twice), not a dissolved footprint.
 * A single file is processed by one worker; chunking across workers is designed, not built.
-* Docker images are built in CI; on the development machine the stack was run natively against Supabase.
+* Docker images are built (and the full test suite runs against a PostGIS container) in CI on every push; the
+  compose stack itself has not been run end to end — on the development machine the app ran natively against Supabase.
 
 ## Future scope
 

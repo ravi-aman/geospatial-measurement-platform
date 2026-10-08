@@ -33,5 +33,5 @@ Every requirement of the assignment, where it is implemented, and the tests that
 | Upload security (zip-slip, zip bombs, XXE, size limits) | [security.md](architecture/security.md) |
 | Vector tiles + MapLibre UI, virtualised table | [frontend.md](architecture/frontend.md) |
 | Structured logging with correlation ids, health/readiness | [observability.md](architecture/observability.md) |
-| 293 backend + 18 frontend tests, mypy --strict, CI | [testing/strategy.md](testing/strategy.md) |
+| 299 backend + 18 frontend tests, 95 % coverage, mypy --strict, CI | [testing/strategy.md](testing/strategy.md) |
 | Docker images, compose stack, AWS design | [deployment/](deployment/docker.md) |
