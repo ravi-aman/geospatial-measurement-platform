@@ -231,3 +231,18 @@ class TestPipeline:
         with zipfile.ZipFile(zip_path) as zf:
             zf.extractall(out)  # trusted test fixture
         return next(out.glob("*.shp"))
+
+
+def test_summary_totals_are_null_when_nothing_was_measured() -> None:
+    """'0 m2' would claim the polygons have no area; null says they were not measured."""
+    from app.geoprocessing.summary import SummaryAccumulator
+
+    records = run([box(10, 10, 20, 20), LineString([(1, 1), (2, 2)])], ctx(None))  # no CRS -> not measured
+    accumulator = SummaryAccumulator()
+    accumulator.add(records)
+    snapshot = accumulator.snapshot()
+    assert snapshot["total_area_m2"] is None and snapshot["total_length_m"] is None
+
+    measured = SummaryAccumulator()
+    measured.add(run([box(77, 28, 77.01, 28.01)]))
+    assert measured.snapshot()["total_area_m2"] > 0 and measured.snapshot()["total_length_m"] is None

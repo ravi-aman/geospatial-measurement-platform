@@ -31,6 +31,8 @@ class SummaryAccumulator:
     issue_counts: Counter[str] = field(default_factory=Counter)
     total_area_m2: float = 0.0
     total_length_m: float = 0.0
+    measured_areal: int = 0  # totals are null (not 0) when nothing of that kind was measured
+    measured_linear: int = 0
     features_with_z: int = 0
     repaired_features: int = 0
     total_features: int = 0
@@ -55,9 +57,12 @@ class SummaryAccumulator:
                 self.features_with_z += 1
             if record.repaired:
                 self.repaired_features += 1
-            if record.status is MeasurementStatus.MEASURED:
-                self.total_area_m2 += record.area_m2 or 0.0
-                self.total_length_m += record.length_m or 0.0
+            if record.status is MeasurementStatus.MEASURED and record.area_m2 is not None:
+                self.total_area_m2 += record.area_m2
+                self.measured_areal += 1
+            if record.status is MeasurementStatus.MEASURED and record.length_m is not None:
+                self.total_length_m += record.length_m
+                self.measured_linear += 1
             if record.bbox_wgs84 is not None:
                 self._extend_bbox(record.bbox_wgs84)
 
@@ -76,13 +81,12 @@ class SummaryAccumulator:
         return self.status_counts.get(str(status), 0)
 
     def snapshot(self) -> dict[str, Any]:
-        measured_areal = any(self.geometry_types.get(t) for t in ("Polygon", "MultiPolygon"))
         return {
             "total_features": self.total_features,
             "status_counts": {str(s): self.count(s) for s in MeasurementStatus},
             "geometry_types": dict(self.geometry_types.most_common()),
-            "total_area_m2": self.total_area_m2 if self.total_area_m2 or measured_areal else None,
-            "total_length_m": self.total_length_m if self.total_length_m else None,
+            "total_area_m2": self.total_area_m2 if self.measured_areal else None,
+            "total_length_m": self.total_length_m if self.measured_linear else None,
             "bbox": self.bbox,
             "features_with_z": self.features_with_z,
             "repaired_features": self.repaired_features,
