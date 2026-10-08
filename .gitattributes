@@ -1,0 +1,12 @@
+# Normalise line endings in the repository (LF), regardless of contributor OS.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary sample data
+*.zip binary
+*.shp binary
+*.shx binary
+*.dbf binary
+*.png binary
+*.ico binary

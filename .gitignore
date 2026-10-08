@@ -1,0 +1,49 @@
+# --- secrets & local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- local working notes
+.notes/
+
+# --- Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+build/
+dist/
+
+# --- runtime artefacts (uploaded files, temp data)
+backend/var/
+var/
+*.tmp
+
+# --- Node / frontend
+node_modules/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo
+.vite/
+
+# --- OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# --- Claude Code local settings
+.claude/settings.local.json

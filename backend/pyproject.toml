@@ -1,0 +1,119 @@
+[project]
+name = "geomeasure"
+version = "1.0.0"
+description = "CRS-aware geospatial file measurement API: upload KML / zipped Shapefiles, extract features, measure area and length."
+readme = "../README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "ravi-aman" }]
+# Runtime dependencies. Every entry is justified in docs/architecture/backend.md#dependencies.
+dependencies = [
+    "fastapi>=0.135,<1.0",
+    "uvicorn[standard]>=0.34",
+    "python-multipart>=0.0.20",
+    "pydantic>=2.11,<3",
+    "pydantic-settings>=2.9,<3",
+    "sqlalchemy>=2.0.40,<2.2",
+    "alembic>=1.15,<2",
+    "geoalchemy2>=0.17,<0.21",
+    "psycopg[binary]>=3.2,<4",
+    "shapely>=2.1,<3",
+    "pyproj>=3.7,<4",
+    "pyogrio>=0.11,<1",
+    "pyarrow>=19",
+    "numpy>=2.0",
+    "defusedxml>=0.7.1",
+    "boto3>=1.37",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "httpx2>=2.13",      # Starlette TestClient transport
+    "hypothesis>=6.130",
+    "moto[s3]>=5.1",
+    "geopandas>=1.0",   # test oracle (estimate_utm_crs) + sample-data generation; not a runtime dependency
+    "ruff>=0.11",
+    "mypy>=1.15",
+]
+
+[project.scripts]
+geomeasure-worker = "app.worker.__main__:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+# ---------------------------------------------------------------- tooling
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F",      # pycodestyle / pyflakes
+    "I",                # isort
+    "B",                # bugbear
+    "UP",               # pyupgrade
+    "S",                # bandit (security)
+    "SIM",              # simplify
+    "RUF",              # ruff-specific
+    "PTH",              # prefer pathlib
+    "N",                # naming
+    "C4",               # comprehensions
+    "DTZ",              # timezone-aware datetimes
+    "T20",              # no print()
+]
+ignore = [
+    "S101",   # assert is fine in tests (scoped below)
+    "B008",   # FastAPI dependency injection uses calls in defaults
+    "RUF012", # pydantic/SQLAlchemy class attributes
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S108", "S311", "S603", "PTH", "T20", "DTZ"]
+"scripts/**" = ["T20", "S311"]
+"migrations/**" = ["N", "E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+exclude = ["migrations/versions/", "build/"]
+
+[[tool.mypy.overrides]]
+module = ["pyogrio.*", "shapely.*", "geoalchemy2.*", "boto3.*", "botocore.*", "moto.*", "defusedxml.*", "pyarrow.*", "geopandas.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+markers = [
+    "db: requires a PostgreSQL/PostGIS database (TEST_DATABASE_URL)",
+    "slow: performance / large-dataset tests (deselect with -m 'not slow')",
+]
+filterwarnings = [
+    "error::DeprecationWarning:app.*",
+]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+omit = ["app/worker/__main__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@overload"]
