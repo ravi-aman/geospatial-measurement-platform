@@ -34,7 +34,7 @@ jobs:
       REQUIRE_DB_TESTS: "1"   # fail (not skip) if the database tests cannot run
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - uses: astral-sh/setup-uv@v6
@@ -106,7 +106,7 @@ jobs:
     continue-on-error: true   # informational: surfaces advisories without blocking unrelated changes
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - run: pip install pip-audit && pip-audit -r <(grep -v '^#' backend/constraints.txt | grep -v '^$')
